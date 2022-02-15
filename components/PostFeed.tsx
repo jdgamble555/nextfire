@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
-export default function PostFeed({ posts, admin = false }: { posts: any, admin?: boolean }) {
-    return posts ? posts.map((post: any) => <PostItem post={post} key={post.slug} admin={admin} />) : null;
+export default function PostFeed({ posts, admin = false }: { posts: any[], admin?: boolean }) {
+    return posts && posts.length ? <>{posts.map((post: any, i: number) => <PostItem post={post} key={i} admin={admin} />)}</> : <></>;
 }
 
 function PostItem({ post, admin }: { post: any, admin: boolean }) {
