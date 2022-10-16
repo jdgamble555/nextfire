@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react';
 //import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '@lib/firebase';
@@ -45,19 +46,19 @@ export function useAuthState(auth: Auth): any {
         return onIdTokenChanged(auth, (_user) => {
             setCurrentUser(_user ?? null);
         });
-    }, [auth]);
+    }, []);
     return [user];
 }
 
 export function useDocument(ref: DocumentReference): any {
-    const [_doc, setDoc] = useState<DocumentData | null>(null);
+    const [_doc, _setDoc] = useState<DocumentData | null>(null);
 
     useEffect(() => {
         // turn off realtime subscription
         return onSnapshot(ref, (snap) => {
-            setDoc(snap.exists() ? snap : null);
+            _setDoc(snap.exists() ? snap : null);
         });
-    }, [ref]);
+    }, []);
     return [_doc];
 }
 
@@ -69,7 +70,7 @@ export function useDocumentData(ref: DocumentReference): any {
         return onSnapshot(ref, (snap) => {
             setDoc(snap.exists() ? snap.data() : null);
         });
-    }, [ref]);
+    }, []);
     return [_doc];
 }
 
@@ -82,7 +83,7 @@ export function useDocumentDataOnce(ref: DocumentReference): any {
             setDoc(snap.exists() ? snap.data() : null);
         });
         return;
-    }, [ref]);
+    }, []);
     return [_doc];
 }
 
@@ -94,6 +95,6 @@ export function useCollection(ref: Query): any {
         return onSnapshot(ref, (snap) => {
             setDoc(!snap.empty ? snap : null);
         });
-    }, [ref]);
+    }, []);
     return [_doc];
 }

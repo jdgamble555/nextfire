@@ -12,6 +12,7 @@ export default function Heart({ postRef }: any) {
     // Listen to heart document for currently logged in user
     const heartRef = doc(getFirestore(), postRef.path, 'hearts', uid);
     const [heartDoc] = useDocument(heartRef);
+    console.log(heartDoc);
 
     // Create a user-to-post relationship
     const addHeart = async () => {
