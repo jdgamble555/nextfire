@@ -33,7 +33,6 @@ function PostManager() {
     // const postRef = firestore.collection('users').doc(auth.currentUser.uid).collection('posts').doc(slug);
     const postRef = doc(getFirestore(), 'users', uid, 'posts', slug);
     const [post] = useDocumentDataOnce(postRef);
-    //console.log(post);
 
     return (
         <main className={styles.container}>

@@ -62,7 +62,6 @@ export const getStaticPaths: GetStaticPaths = async () => {
 export default function Post(props: any): JSX.Element {
   const postRef = doc(getFirestore(), props.path);
   const [realtimePost] = useDocumentData(postRef);
-  //console.log(realtimePost);
 
   const post = realtimePost || props.post;
 

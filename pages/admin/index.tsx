@@ -38,7 +38,6 @@ function PostList(): JSX.Element {
     const postQuery = query(ref, orderBy('createdAt'))
 
     const [querySnapshot] = useCollection(postQuery);
-    //console.log(querySnapshot);
 
     const posts: any = querySnapshot?.docs.map((doc: any) => doc.data());
 
