@@ -56,7 +56,6 @@ export function useDocument(ref: DocumentReference): any {
     const firestore = ref.firestore;
 
     useEffect(() => {
-        // turn off realtime subscription
         return onSnapshot(doc(firestore, path), (snap) => {
             _setDoc(snap.exists() ? snap : null);
         });
@@ -71,7 +70,6 @@ export function useDocumentData(ref: DocumentReference): any {
     const firestore = ref.firestore;
 
     useEffect(() => {
-        // turn off realtime subscription
         return onSnapshot(doc(firestore, path), (snap) => {
             setDoc(snap.exists() ? snap.data() : null);
         });
@@ -86,7 +84,6 @@ export function useDocumentDataOnce(ref: DocumentReference): any {
     const firestore = ref.firestore;
 
     useEffect(() => {
-        // turn off realtime subscription
         getDoc(doc(firestore, path)).then(snap => {
             setDoc(snap.exists() ? snap.data() : null);
         });
@@ -99,7 +96,6 @@ export function useCollection(ref: Query): any {
     const [_col, setCol] = useState<QuerySnapshot | null>(null);
     const colRef = useRef(ref);
     useEffect(() => {
-        // turn off realtime subscription
         return onSnapshot(colRef.current, (snap) => {
             setCol(!snap.empty ? snap : null);
         });
