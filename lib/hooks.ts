@@ -1,9 +1,19 @@
 import { useEffect, useState } from 'react';
-import { useAuthState } from 'react-firebase-hooks/auth';
+//import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '@lib/firebase';
-import { doc, getFirestore, onSnapshot } from 'firebase/firestore';
+import {
+    doc,
+    DocumentData,
+    DocumentReference,
+    getDoc,
+    getFirestore,
+    onSnapshot,
+    Query,
+    QuerySnapshot
+} from 'firebase/firestore';
+import { Auth, onIdTokenChanged, User } from 'firebase/auth';
 
-export function useUserData() {
+export function useUserData(): any {
     const [user] = useAuthState(auth);
     const [username, setUsername] = useState(null);
 
@@ -12,11 +22,9 @@ export function useUserData() {
         let unsubscribe;
 
         if (user) {
-            
-            // const ref = firestore.collection('users').doc(user.uid);
             const ref = doc(getFirestore(), 'users', user.uid);
             unsubscribe = onSnapshot(ref, (doc) => {
-                setUsername(doc.data()?.username);
+                if (doc) setUsername(doc.data()?.username);
             });
         } else {
             setUsername(null);
@@ -26,4 +34,66 @@ export function useUserData() {
     }, [user]);
 
     return { user, username };
+}
+
+// added this due to problems with react-firebase-hooks
+
+export function useAuthState(auth: Auth): any {
+    const [user, setCurrentUser] = useState<User | null>(null);
+
+    useEffect(() => {
+        return onIdTokenChanged(auth, (_user) => {
+            setCurrentUser(_user ?? null);
+        });
+    }, [auth]);
+    return [user];
+}
+
+export function useDocument(ref: DocumentReference): any {
+    const [_doc, setDoc] = useState<DocumentData | null>(null);
+
+    useEffect(() => {
+        // turn off realtime subscription
+        return onSnapshot(ref, (snap) => {
+            setDoc(snap.exists() ? snap : null);
+        });
+    }, [ref]);
+    return [_doc];
+}
+
+export function useDocumentData(ref: DocumentReference): any {
+    const [_doc, setDoc] = useState<DocumentData | null>(null);
+
+    useEffect(() => {
+        // turn off realtime subscription
+        return onSnapshot(ref, (snap) => {
+            setDoc(snap.exists() ? snap.data() : null);
+        });
+    }, [ref]);
+    return [_doc];
+}
+
+export function useDocumentDataOnce(ref: DocumentReference): any {
+    const [_doc, setDoc] = useState<DocumentData | null>(null);
+
+    useEffect(() => {
+        // turn off realtime subscription
+        getDoc(ref).then(snap => {
+            setDoc(snap.exists() ? snap.data() : null);
+        });
+        return;
+    }, [ref]);
+    return [_doc];
+}
+
+export function useCollection(ref: Query): any {
+    const [_doc, setDoc] = useState<QuerySnapshot | null>(null);
+
+    useEffect(() => {
+        // turn off realtime subscription
+        return onSnapshot(ref, (snap) => {
+            setDoc(!snap.empty ? snap : null);
+        });
+    }, [ref]);
+    return [_doc];
 }

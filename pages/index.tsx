@@ -1,4 +1,4 @@
-import type { NextPage } from 'next';
+import type { GetServerSideProps, NextPage } from 'next';
 import PostFeed from '@components/PostFeed';
 import Loader from '@components/Loader';
 import { postToJSON } from '@lib/firebase';
@@ -10,18 +10,14 @@ import Metatags from '@components/Metatags';
 // Max post to query per page
 const LIMIT = 10;
 
-export async function getServerSideProps() {
-  // const postsQuery = firestore
-  //   .collectionGroup('posts')
-  //   .where('published', '==', true)
-  //   .orderBy('createdAt', 'desc')
-  //   .limit(LIMIT);
+export const getServerSideProps: GetServerSideProps = async () => {
+
   const ref = collectionGroup(getFirestore(), 'posts');
   const postsQuery = query(
     ref,
     where('published', '==', true),
     orderBy('createdAt', 'desc'),
-    limit(LIMIT),
+    limit(LIMIT)
   )
 
   const posts = (await getDocs(postsQuery)).docs.map(postToJSON);
@@ -40,27 +36,20 @@ const Home: NextPage = (props: any) => {
 
 
   // Get next page in pagination query
-  const getMorePosts = async () => {
+  const getMorePosts = async (): Promise<void> => {
     setLoading(true);
     const last = posts[posts.length - 1];
 
     const cursor = last && last.createdAt ? typeof last.createdAt === 'number' ? Timestamp.fromMillis(last.createdAt) : last.createdAt : null;
 
-    // const query = firestore
-    //   .collectionGroup('posts')
-    //   .where('published', '==', true)
-    //   .orderBy('createdAt', 'desc')
-    //   .startAfter(cursor)
-    //   .limit(LIMIT);
-
-    const ref = collectionGroup(getFirestore(), 'posts');
+    const ref = collectionGroup(getFirestore(), 'posts'); 
     const postsQuery = query(
       ref,
       where('published', '==', true),
       orderBy('createdAt', 'desc'),
       startAfter(cursor),
       limit(LIMIT),
-    )
+    );
 
     const newPosts = (await getDocs(postsQuery)).docs.map((doc) => doc.data());
 

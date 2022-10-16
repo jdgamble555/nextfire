@@ -4,7 +4,7 @@ import Loader from './Loader';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 
 // Uploads images to Firebase Storage
-export default function ImageUploader() {
+export default function ImageUploader(): JSX.Element {
     const [uploading, setUploading] = useState(false);
     const [progress, setProgress] = useState(0);
     const [downloadURL, setDownloadURL] = useState(null);
@@ -21,7 +21,7 @@ export default function ImageUploader() {
         setUploading(true);
 
         // Starts the upload
-        const task = uploadBytesResumable(fileRef, file)
+        const task = uploadBytesResumable(fileRef, file);
 
         // Listen to updates to upload task
         task.on(STATE_CHANGED, (snapshot) => {

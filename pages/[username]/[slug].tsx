@@ -9,11 +9,13 @@ import { doc, getDocs, getDoc, collectionGroup, query, limit, getFirestore } fro
 
 
 import Link from 'next/link';
-import { useDocumentData } from 'react-firebase-hooks/firestore';
+//import { useDocumentData } from 'react-firebase-hooks/firestore';
 import { useContext } from 'react';
+import { GetStaticPaths, GetStaticProps } from 'next';
+import { useDocumentData } from '@lib/hooks';
 
 
-export async function getStaticProps({ params }: { params: any }) {
+export const getStaticProps: GetStaticProps = async ({ params }: { params?: any }) => {
   const { username, slug } = params;
   const userDoc = await getUserWithUsername(username);
 
@@ -21,12 +23,8 @@ export async function getStaticProps({ params }: { params: any }) {
   let path = null;
 
   if (userDoc) {
-    // const postRef = userDoc.ref.collection('posts').doc(slug);
     const postRef = doc(getFirestore(), userDoc.ref.path, 'posts', slug);
-
-    // post = postToJSON(await postRef.get());
     post = postToJSON(await getDoc(postRef));
-
     path = postRef.path;
   }
 
@@ -36,12 +34,12 @@ export async function getStaticProps({ params }: { params: any }) {
   };
 }
 
-export async function getStaticPaths() {
+export const getStaticPaths: GetStaticPaths = async () => {
   // Improve my using Admin SDK to select empty docs
   const q = query(
     collectionGroup(getFirestore(), 'posts'),
     limit(20)
-  )
+  );
   const snapshot = await getDocs(q);
 
   const paths = snapshot.docs.map((doc) => {
@@ -61,9 +59,10 @@ export async function getStaticPaths() {
   };
 }
 
-export default function Post(props: any) {
+export default function Post(props: any): JSX.Element {
   const postRef = doc(getFirestore(), props.path);
   const [realtimePost] = useDocumentData(postRef);
+  //console.log(realtimePost);
 
   const post = realtimePost || props.post;
 

@@ -6,7 +6,7 @@ import { doc, getDoc, getFirestore, writeBatch } from 'firebase/firestore';
 import { signInWithPopup, signOut } from 'firebase/auth';
 import debounce from 'lodash.debounce';
 
-export default function Enter() {
+export default function Enter(): JSX.Element {
     const { user, username } = useContext(UserContext);
 
     // 1. user signed out <SignInButton />
@@ -23,7 +23,7 @@ export default function Enter() {
 }
 
 // Sign in with Google button
-function SignInButton() {
+function SignInButton(): JSX.Element {
     const signInWithGoogle = async () => {
         await signInWithPopup(auth, googleAuthProvider)
             .catch((e: any) => console.error(e));
@@ -38,12 +38,12 @@ function SignInButton() {
 }
 
 // Sign out button
-function SignOutButton() {
+function SignOutButton(): JSX.Element {
     return <button onClick={() => signOut(auth).catch((e: any) => console.error(e))}>Sign Out</button>;
 }
 
 // Username form
-function UsernameForm() {
+function UsernameForm(): JSX.Element | null {
     const [formValue, setFormValue] = useState('');
     const [isValid, setIsValid] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -65,7 +65,7 @@ function UsernameForm() {
         await batch.commit().catch((e: any) => console.error(e));
     };
 
-    const onChange = (e: any) => {
+    const onChange = (e: any): void => {
         // Force form value typed in form to match correct format
         const val = e.target.value.toLowerCase();
         const re = /^(?=[a-zA-Z0-9._]{3,15}$)(?!.*[_.]{2})[^_.].*[^_.]$/;
@@ -84,11 +84,9 @@ function UsernameForm() {
         }
     };
 
-    //
-
     // Hit the database for username match after each debounced change
     // useCallback is required for debounce to work
-    const checkUsername = useCallback((username: string) => {
+    const checkUsername = useCallback((username: string): void => {
         debounce(async () => {
             if (username.length >= 3) {
                 const ref = doc(getFirestore(), 'usernames', username);
@@ -100,7 +98,7 @@ function UsernameForm() {
         }, 500)
     }, []);
 
-    useEffect(() => {
+    useEffect((): void => {
         checkUsername(formValue);
     }, [formValue, checkUsername]);
 
@@ -130,7 +128,7 @@ function UsernameForm() {
     ) || null;
 }
 
-function UsernameMessage({ username, isValid, loading }: { username: string, isValid: boolean, loading: boolean }) {
+function UsernameMessage({ username, isValid, loading }: { username: string, isValid: boolean, loading: boolean }): JSX.Element {
     if (loading) {
         return <p>Checking...</p>;
     } else if (isValid) {

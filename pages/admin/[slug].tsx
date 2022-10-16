@@ -7,11 +7,12 @@ import ImageUploader from '@components/ImageUploader';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 
-import { useDocumentDataOnce } from 'react-firebase-hooks/firestore';
+//import { useDocumentDataOnce } from 'react-firebase-hooks/firestore';
 import { useForm } from 'react-hook-form';
 import ReactMarkdown from 'react-markdown';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
+import { useDocumentDataOnce } from '@lib/hooks';
 
 export default function AdminPostEdit() {
     return (
@@ -32,6 +33,7 @@ function PostManager() {
     // const postRef = firestore.collection('users').doc(auth.currentUser.uid).collection('posts').doc(slug);
     const postRef = doc(getFirestore(), 'users', uid, 'posts', slug);
     const [post] = useDocumentDataOnce(postRef);
+    //console.log(post);
 
     return (
         <main className={styles.container}>

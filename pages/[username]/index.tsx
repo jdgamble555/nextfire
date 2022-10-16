@@ -4,8 +4,9 @@ import { query, collection, where, getDocs, limit, orderBy, getFirestore } from 
 import UserProfile from "@components/UserProfile";
 import PostFeed from "@components/PostFeed";
 import Metatags from '@components/Metatags';
+import { GetServerSideProps } from 'next';
 
-export async function getServerSideProps({ query: urlQuery }: { query: any }) {
+export const getServerSideProps: GetServerSideProps = async ({ query: urlQuery }: { query: any }) => {
   const { username } = urlQuery;
 
   const userDoc = await getUserWithUsername(username);
@@ -23,11 +24,6 @@ export async function getServerSideProps({ query: urlQuery }: { query: any }) {
 
   if (userDoc) {
     user = userDoc.data();
-    // const postsQuery = userDoc.ref
-    //   .collection('posts')
-    //   .where('published', '==', true)
-    //   .orderBy('createdAt', 'desc')
-    //   .limit(5);
 
     const postsQuery = query(
       collection(getFirestore(), userDoc.ref.path, 'posts'),
@@ -36,6 +32,9 @@ export async function getServerSideProps({ query: urlQuery }: { query: any }) {
       limit(5)
     );
     posts = (await getDocs(postsQuery)).docs.map(postToJSON);
+
+    console.log('how many times is this called?');
+
   }
 
   return {
@@ -43,7 +42,7 @@ export async function getServerSideProps({ query: urlQuery }: { query: any }) {
   };
 }
 
-export default function UserProfilePage({ user, posts }: { user: any, posts: any[] }) {
+export default function UserProfilePage({ user, posts }: { user: any, posts: any[] }): JSX.Element {
   return (
     <main>
       <Metatags title={user.username} description={`${user.username}'s public profile`} />
