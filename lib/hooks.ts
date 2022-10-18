@@ -9,11 +9,12 @@ import {
     getFirestore,
     onSnapshot,
     Query,
+    QueryDocumentSnapshot,
     QuerySnapshot
 } from 'firebase/firestore';
 import { Auth, onIdTokenChanged, User } from 'firebase/auth';
 
-export function useUserData(): any {
+export function useUserData(): { user: User | null, username: string | null } {
     const [user] = useAuthState(auth);
     const [username, setUsername] = useState(null);
 
@@ -38,7 +39,7 @@ export function useUserData(): any {
 
 // added this due to problems with react-firebase-hooks
 
-export function useAuthState(auth: Auth): any {
+export function useAuthState(auth: Auth): (User | null)[] {
     const [user, setCurrentUser] = useState<User | null>(null);
 
     useEffect(() => {
@@ -49,56 +50,55 @@ export function useAuthState(auth: Auth): any {
     return [user];
 }
 
-export function useDocument(ref: DocumentReference): any {
-    const [_doc, _setDoc] = useState<DocumentData | null>(null);
+export function useDocument(ref: DocumentReference): (QueryDocumentSnapshot | null)[] {
+    const [_doc, _setDoc] = useState<QueryDocumentSnapshot | null>(null);
 
-    const path = ref.path;
-    const firestore = ref.firestore;
+    const docRef = useRef(ref);
 
     useEffect(() => {
-        return onSnapshot(doc(firestore, path), (snap) => {
+        return onSnapshot(docRef.current, (snap) => {
             _setDoc(snap.exists() ? snap : null);
         });
-    }, [path, firestore]);
+    }, [docRef]);
     return [_doc];
 }
 
-export function useDocumentData(ref: DocumentReference): any {
+export function useDocumentData(ref: DocumentReference): (DocumentData | null)[] {
     const [_doc, setDoc] = useState<DocumentData | null>(null);
 
-    const path = ref.path;
-    const firestore = ref.firestore;
+    const docRef = useRef(ref);
 
     useEffect(() => {
-        return onSnapshot(doc(firestore, path), (snap) => {
+        return onSnapshot(docRef.current, (snap) => {
             setDoc(snap.exists() ? snap.data() : null);
         });
-    }, [path, firestore]);
+    }, [docRef]);
     return [_doc];
 }
 
-export function useDocumentDataOnce(ref: DocumentReference): any {
+export function useDocumentDataOnce(ref: DocumentReference): (DocumentData | null)[] {
     const [_doc, setDoc] = useState<DocumentData | null>(null);
 
-    const path = ref.path;
-    const firestore = ref.firestore;
+    const docRef = useRef(ref);
 
     useEffect(() => {
-        getDoc(doc(firestore, path)).then(snap => {
+        getDoc(docRef.current).then(snap => {
             setDoc(snap.exists() ? snap.data() : null);
         });
         return;
-    }, [path, firestore]);
+    }, [docRef]);
     return [_doc];
 }
 
-export function useCollection(ref: Query): any {
+export function useCollection(ref: Query): (QuerySnapshot<DocumentData> | null)[] {
     const [_col, setCol] = useState<QuerySnapshot | null>(null);
+
     const colRef = useRef(ref);
+
     useEffect(() => {
         return onSnapshot(colRef.current, (snap) => {
             setCol(!snap.empty ? snap : null);
         });
-    }, []);
+    }, [colRef]);
     return [_col];
 }
