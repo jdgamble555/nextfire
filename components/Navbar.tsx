@@ -41,9 +41,7 @@ export default function Navbar(): JSX.Element {
                         <li>
                             {user?.photoURL && (
                                 <Link passHref href={`/${username}`}>
-                                    <a>
-                                        <Img src={user?.photoURL} width="50px" height="50px" />
-                                    </a>
+                                    <Img alt={user?.displayName} src={user?.photoURL} width="50" height="50" />
                                 </Link>
                             )}
                         </li>

@@ -3,8 +3,8 @@ import Img from 'next/image';
 import { UserContext } from '@lib/context';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { doc, getDoc, getFirestore, writeBatch } from 'firebase/firestore';
-import { signInWithPopup, signOut } from 'firebase/auth';
-import debounce from 'lodash.debounce';
+import { signInWithPopup, signInAnonymously, signOut } from 'firebase/auth';
+//import debounce from 'lodash.debounce';
 
 export default function Enter(): JSX.Element {
     const { user, username } = useContext(UserContext);
@@ -30,10 +30,15 @@ function SignInButton(): JSX.Element {
     };
 
     return (
-        <button className="btn-google" onClick={signInWithGoogle}>
-            <Img src={'/google.png'} width="30px" height="30px" />
-            Sign in with Google
-        </button>
+        <>
+            <button className="btn-google" onClick={signInWithGoogle}>
+                <Img alt="Sign in with Google" src={'/google.png'} width="30" height="30" />
+                Sign in with Google
+            </button>
+            <button onClick={() => signInAnonymously(auth)}>
+                Sign in Anonymously
+            </button>
+        </>
     );
 }
 
@@ -84,19 +89,25 @@ function UsernameForm(): JSX.Element | null {
         }
     };
 
+    const [timer] = useState(0);
+
     // Hit the database for username match after each debounced change
     // useCallback is required for debounce to work
     const checkUsername = useCallback((username: string): void => {
-        debounce(async () => {
+        //debounce(async () => {
+        clearTimeout(timer);
+        setTimeout(async () => {
             if (username.length >= 3) {
+                console.log(username)
                 const ref = doc(getFirestore(), 'usernames', username);
                 const snap = await getDoc(ref);
                 console.log('Firestore read executed!', snap.exists());
                 setIsValid(!snap.exists());
                 setLoading(false);
             }
-        }, 500)
-    }, []);
+        }, 500);
+        // }, 500)
+    }, [timer]);
 
     useEffect((): void => {
         checkUsername(formValue);
