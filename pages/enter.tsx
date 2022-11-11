@@ -98,7 +98,6 @@ function UsernameForm(): JSX.Element | null {
         clearTimeout(timer);
         setTimeout(async () => {
             if (username.length >= 3) {
-                console.log(username)
                 const ref = doc(getFirestore(), 'usernames', username);
                 const snap = await getDoc(ref);
                 console.log('Firestore read executed!', snap.exists());
